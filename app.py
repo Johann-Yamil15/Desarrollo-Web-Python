@@ -3,7 +3,8 @@ from core.router import resolve
 from core.response import Response
 from core.static import serve_static
 from middlewares.security_headers import security_headers
-from config.settings import load_settings
+from config.database import load_settings
+
 
 load_settings()
 

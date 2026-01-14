@@ -17,11 +17,19 @@ def prueba(request):
     try:
         conn = get_connection()
         cursor = conn.cursor()
+
         cursor.execute("""
             INSERT INTO Usuarios
             (Nombre, ApellidoP, ApellidoM, Email, FechaNacimiento, PasswordHash)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (nombre, ap, am, email, fecha_nac, password_hash))
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            nombre,
+            ap,
+            am,
+            email,
+            fecha_nac,
+            password_hash
+        ))
 
         conn.commit()
         cursor.close()

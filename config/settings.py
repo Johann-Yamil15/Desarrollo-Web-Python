@@ -1,22 +1,25 @@
-import os
+# config/settings.py
 
-# DB_CONN = (
-#     "DRIVER={ODBC Driver 17 for SQL Server};"
-#     "SERVER=DESKTOP-9OOGAMB;"
-#     "DATABASE=DesarrolloWeb;"
-#     "UID=sa;"
-#     "PWD=123456789;"
-#     "TrustServerCertificate=yes;"
-# )
-DB_CONN = (
-    "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=DesarrolloWeb.mssql.somee.com;"
-    "DATABASE=DesarrolloWeb;"
-    "UID=Johann_SQLLogin_1;"
-    "PWD=3xwx5y8jq3;"
-    "TrustServerCertificate=yes;"
-)
+# =========================
+# CONFIGURACIÓN
+# =========================
 
-def load_settings():
-    if not DB_CONN:
-        raise RuntimeError("Cadena de conexión no definida")
+USE_LOCAL_DB = False   # True = local | False = nube (Render)
+
+# ----- BASE DE DATOS LOCAL -----
+LOCAL_DB = {
+    "server": "localhost",
+    "user": "sa",
+    "password": "123456789",
+    "database": "DesarrolloWeb",
+    "port": 1433
+}
+
+
+# ----- BASE DE DATOS EN LA NUBE -----
+CLOUD_DB = {
+    "server": "DesarrolloWeb.mssql.somee.com",
+    "user": "Johann_SQLLogin_1",
+    "password": "3xwx5y8jq3",
+    "database": "DesarrolloWeb"
+}
