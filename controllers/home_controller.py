@@ -27,4 +27,23 @@ def home(request):
             </button>
         </a>
     """
+    # Botón para ir a /form-test
+    mensaje += """
+        <br><br>
+        <a href="/form-test">
+            <button style="padding:10px 15px;font-size:16px;cursor:pointer;">
+                test de formulario (validaciones)
+            </button>
+        </a>
+    """
+    # Botón para ir a /carrusel
+    mensaje += """
+        <br><br>
+        <a href="/carrusel">
+            <button style="padding:10px 15px;font-size:16px;cursor:pointer;">
+                carrusel
+            </button>
+            </button>
+        </a>
+    """
     return mensaje

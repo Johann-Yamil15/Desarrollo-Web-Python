@@ -5,33 +5,61 @@ from core.static import serve_static
 from middlewares.security_headers import security_headers
 from config.database import load_settings
 
-
 load_settings()
+
 
 def application(environ, start_response):
     # =============================
-    # Archivos estáticos
+    # 1. Archivos estáticos
     # =============================
     static_response = serve_static(environ)
     if static_response:
         status, body, headers = static_response
+        security_headers(headers)
         start_response(status, headers)
         return [body]
 
+    # =============================
+    # 2. Request
+    # =============================
     request = Request(environ)
 
     try:
         controller = resolve(request)
 
         # =============================
-        # Ruta encontrada
+        # 3. Ruta encontrada
         # =============================
         if controller:
-            body = controller(request)
-            response = Response(body)
+            result = controller(request)
+
+            # Controller ya devuelve Response
+            if isinstance(result, Response):
+                response = result
+
+            # Controller devuelve HTML (str)
+            elif isinstance(result, str):
+                response = Response(
+                    result,
+                    "200 OK",
+                    [("Content-Type", "text/html; charset=utf-8")]
+                )
+
+            # Controller devuelve bytes
+            elif isinstance(result, bytes):
+                response = Response(
+                    result,
+                    "200 OK",
+                    [("Content-Type", "application/octet-stream")]
+                )
+
+            else:
+                raise TypeError(
+                    f"Controller retornó tipo no soportado: {type(result)}"
+                )
 
         # =============================
-        # Ruta NO encontrada → /404
+        # 4. Ruta NO encontrada
         # =============================
         else:
             response = Response(
@@ -41,16 +69,20 @@ def application(environ, start_response):
             )
 
     # =============================
-    # Error interno → /404
+    # 5. Error interno REAL (500)
     # =============================
     except Exception as e:
-        print("ERROR:", e)  # log básico
+        print("ERROR INTERNO:", e)
+
         response = Response(
-            "",
-            "302 Found",
-            [("Location", "/404")]
+            "<h1>500 - Error interno del servidor</h1>",
+            "500 Internal Server Error",
+            [("Content-Type", "text/html; charset=utf-8")]
         )
 
+    # =============================
+    # 6. Headers + respuesta final
+    # =============================
     security_headers(response.headers)
     start_response(response.status, response.headers)
     return [response.body]

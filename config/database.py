@@ -10,8 +10,9 @@ def get_connection():
         server=config["server"],
         user=config["user"],
         password=config["password"],
-        database=config["database"]
+        database=config["database"],
     )
+
 
 def load_settings():
     try:

@@ -7,9 +7,10 @@ def security_headers(headers):
         (
             "Content-Security-Policy",
             "default-src 'self'; "
-            "script-src 'self' https://js.hcaptcha.com https://hcaptcha.com; "
-            "frame-src https://hcaptcha.com https://*.hcaptcha.com; "
-            "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https://hcaptcha.com https://*.hcaptcha.com;"
+            "script-src 'self' https://cdn.jsdelivr.net https://js.hcaptcha.com https://hcaptcha.com; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "img-src 'self' data: https://hcaptcha.com https://*.hcaptcha.com; "
+            "font-src 'self' https://cdn.jsdelivr.net; "
+            "frame-src https://hcaptcha.com https://*.hcaptcha.com;"
         )
     ])
