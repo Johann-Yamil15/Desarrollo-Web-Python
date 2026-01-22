@@ -3,134 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validación de Datos</title>
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --error: #ef4444;
-            --text: #1f2937;
-            --bg: #f3f4f6;
-        }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
-        }
-
-        h2 { margin-top: 0; color: var(--primary); text-align: center; }
-
-        .form-group { margin-bottom: 1.2rem; }
-
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-
-        input[type="text"], input[type="email"], input[type="date"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            box-sizing: border-box; /* Crucial para que no se salga del contenedor */
-            transition: border 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .error-input { border-color: var(--error) !important; }
-
-        .error-text { 
-            color: var(--error); 
-            font-size: 12px; 
-            margin-top: 4px; 
-            min-height: 18px; 
-        }
-
-        .checkbox-group { display: flex; align-items: center; gap: 8px; }
-        .checkbox-group input { margin: 0; }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover { background-color: #4338ca; }
-    </style>
+    <title>Registro de Usuario - Validación</title>
+    <link rel="stylesheet" href="/static/css/validacion-form.css">
 </head>
+
 <body>
 
 <div class="container">
-    <h2>Registro de Prueba</h2>
-    <form method="POST">
-        
+    <h2>Registro de Usuario</h2>
+    <p class="subtitle">Completa todos los campos para continuar</p>
+
+    <form method="POST" novalidate>
+
+        <!-- NOMBRE -->
         <div class="form-group">
             <label>Nombre Completo:</label>
-            <input type="text" name="name" value="{{name}}" class="{{class_name}}" placeholder="Ej. Juan Pérez">
+            <input
+                type="text"
+                name="name"
+                id="name"
+                value="{{name}}"
+                placeholder="Ej. Juan Pérez"
+                maxlength="50"
+                required
+            >
             <div class="error-text">{{error_name}}</div>
         </div>
 
+        <!-- USUARIO -->
         <div class="form-group">
             <label>Nombre de Usuario:</label>
-            <input type="text" name="username" value="{{username}}" class="{{class_username}}">
+            <input
+                type="text"
+                name="username"
+                id="username"
+                value="{{username}}"
+                minlength="5"
+                maxlength="50"
+                required
+            >
             <div class="error-text">{{error_username}}</div>
         </div>
 
-        <div class="form-group">
-            <label>Edad:</label>
-            <input type="text" name="age" value="{{age}}" class="{{class_age}}">
-            <div class="error-text">{{error_age}}</div>
-        </div>
-
+        <!-- EMAIL -->
         <div class="form-group">
             <label>Correo Electrónico:</label>
-            <input type="email" name="email" value="{{email}}" class="{{class_email}}">
+            <input
+                type="email"
+                name="email"
+                value="{{email}}"
+                required
+            >
             <div class="error-text">{{error_email}}</div>
         </div>
 
+        <!-- TELÉFONO -->
         <div class="form-group">
             <label>Teléfono:</label>
-            <input type="text" name="phone" value="{{phone}}" class="{{class_phone}}" placeholder="10 dígitos">
+            <input
+                type="text"
+                name="phone"
+                id="phone"
+                value="{{phone}}"
+                placeholder="10 dígitos"
+                maxlength="10"
+                inputmode="numeric"
+                required
+            >
             <div class="error-text">{{error_phone}}</div>
         </div>
 
+        <!-- FECHA -->
         <div class="form-group">
             <label>Fecha de Nacimiento:</label>
-            <input type="date" name="birthdate" value="{{birthdate}}" class="{{class_birthdate}}">
+            <input
+                type="date"
+                name="birthdate"
+                value="{{birthdate}}"
+                min="1900-01-01"
+                max="{{today}}"
+                required
+            >
             <div class="error-text">{{error_birthdate}}</div>
         </div>
 
-        <div class="form-group checkbox-group">
-            <input type="checkbox" name="terms" id="terms" {{checked_terms}}>
-            <label for="terms" style="margin-bottom:0">Acepto los términos</label>
+        <!-- TÉRMINOS -->
+        <div class="checkbox-group">
+            <input type="checkbox" name="terms" id="terms" required {{checked_terms}}>
+            <label for="terms">Acepto los términos y condiciones</label>
         </div>
-        <div class="error-text" style="margin-top:-10px; margin-bottom:10px;">{{error_terms}}</div>
+        <div class="error-text">{{error_terms}}</div>
 
         <button type="submit">Validar Datos</button>
     </form>
 </div>
+
+<!-- JS Externo para Validación -->
+<script src="/static/js/validacion-form.js"></script>
 
 </body>
 </html>
