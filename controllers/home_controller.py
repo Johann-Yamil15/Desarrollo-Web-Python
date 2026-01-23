@@ -46,4 +46,14 @@ def home(request):
             </button>
         </a>
     """
+    # Botón para ir a /productos
+    mensaje += """
+        <br><br>
+        <a href="/productos">
+            <button style="padding:10px 15px;font-size:16px;cursor:pointer;">
+                estilo breadcrumbs
+            </button>
+            </button>
+        </a>
+    """
     return mensaje
