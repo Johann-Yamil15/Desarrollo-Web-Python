@@ -23,7 +23,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #940d2a 0%, #000000 100%);
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
