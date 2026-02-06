@@ -1,0 +1,94 @@
+<link rel="stylesheet" href="/static/css/carrusel/carrusel.css">
+
+<div class="page-wrapper">
+    <div class="container py-5">
+        <div class="header mb-5 text-center">
+            <h2 class="display-6 fw-bold">Administrador de Carrusel</h2>
+            <p class="text-muted">Sube y gestiona las imágenes publicitarias de tu sitio</p>
+            <hr class="w-25 mx-auto">
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="carousel-card shadow-lg border-0 rounded-4 overflow-hidden">
+                    <div id="mainCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {{items_carrusel}}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark rounded-circle p-3"
+                                aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark rounded-circle p-3"
+                                aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary fab d-flex align-items-center justify-content-center" data-bs-toggle="modal"
+        data-bs-target="#uploadModal">
+        <i class="fas fa-plus"></i>
+    </button>
+</div>
+
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" action="/carrusel" enctype="multipart/form-data" class="modal-content custom-modal">
+            
+            <div class="modal-header">
+                <div class="header-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div>
+                    <h5 class="modal-title">Subir Imagen</h5>
+                    <p class="modal-subtitle">Añade una nueva pieza al carrusel publicitario</p>
+                </div>
+                <button type="button" class="btn-close-custom" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="upload-area" onclick="document.getElementById('imagenInput').click();">
+                    <input type="file" name="imagen" id="imagenInput" accept="image/*" required hidden>
+                    
+                    <div id="drop-zone-content">
+                        <div class="icon-circle">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                        </div>
+                        <p class="main-text">Arrastra tu imagen aquí o <span>selecciónala</span></p>
+                        <p class="sub-text">Formatos soportados: JPG, PNG, WEBP (Máx. 5MB)</p>
+                    </div>
+
+                    <div id="previewContainer" class="preview-wrapper d-none">
+                        <img id="previewImg" src="" alt="Vista previa">
+                        <div class="preview-overlay">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Cambiar imagen</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="fileError" class="error-toast d-none">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Formato de archivo no válido</span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn-save" id="btnGuardar" disabled>
+                    <span>Guardar Imagen</span>
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/static/js/carrusel/carrusel.js"></script>

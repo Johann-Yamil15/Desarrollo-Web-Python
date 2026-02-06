@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="/static/css/prueba/form_test.css">
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="carousel-card p-5"> <div class="mb-4">
+                    <h2 class="fw-bold text-dark">Registro de Usuario</h2>
+                    <p class="text-muted">Completa todos los campos para continuar con la validación visual.</p>
+                </div>
+
+                <form method="POST" novalidate class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Nombre Completo:</label>
+                        <input type="text" name="name" id="name" value="{{name}}" 
+                               class="form-control {{class_name}}" placeholder="Ej. Juan Pérez" maxlength="50" required>
+                        <div class="text-danger small mt-1">{{error_name}}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nombre de Usuario:</label>
+                        <input type="text" name="username" id="username" value="{{username}}" 
+                               class="form-control {{class_username}}" minlength="5" maxlength="50" required>
+                        <div class="text-danger small mt-1">{{error_username}}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Teléfono:</label>
+                        <input type="text" name="phone" id="phone" value="{{phone}}" 
+                               class="form-control {{class_phone}}" placeholder="10 dígitos" maxlength="10" required>
+                        <div class="text-danger small mt-1">{{error_phone}}</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Correo Electrónico:</label>
+                        <input type="email" name="email" value="{{email}}" 
+                               class="form-control {{class_email}}" placeholder="correo@ejemplo.com" required>
+                        <div class="text-danger small mt-1">{{error_email}}</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Fecha de Nacimiento:</label>
+                        <input type="date" name="birthdate" value="{{birthdate}}" 
+                               class="form-control {{class_birthdate}}" required>
+                        <div class="text-danger small mt-1">{{error_birthdate}}</div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="terms" id="terms" {{checked_terms}} required>
+                            <label class="form-check-label text-muted" for="terms">
+                                Acepto los términos y condiciones
+                            </label>
+                        </div>
+                        <div class="text-danger small">{{error_terms}}</div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" 
+                                style="background: var(--render-blue); border: none; border-radius: 12px;">
+                            Validar Datos
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/prueba/validacion-form.js"></script>

@@ -1,29 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 | Página no encontrada</title>
-<link rel="stylesheet" href="/static/css/404.css">
-</head>
-<body>
+<section class="error-page">
+    <link rel="stylesheet" href="/static/css/error/404.css">
+    
+    <div class="error-wrapper">
+        <div class="svg-container">
+            <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="300" cy="200" r="80" fill="#4d4dff" fill-opacity="0.1" />
+                <text x="50%" y="50%" dy=".35em" text-anchor="middle" class="svg-404">404</text>
+                <g class="shuttle">
+                    <path d="M300,100 L320,140 L300,130 L280,140 Z" fill="#4d4dff" />
+                    <circle cx="300" cy="115" r="3" fill="white" />
+                </g>
+            </svg>
+        </div>
 
-<h1>404</h1>
-
-<div class="cloak__wrapper">
-  <div class="cloak__container">
-    <div class="cloak"></div>
-  </div>
-</div>
-
-<div class="info">
-  <h2>PÁGINA NO ENCONTRADA</h2>
-  <p>
-    Lo sentimos, la página que estás buscando no existe.<br>
-    Si crees que algo no funciona correctamente, por favor informa el problema.
-  </p>
-  <a href="/">Volver al inicio</a>
-</div>
-
-</body>
-</html>
+        <div class="error-text">
+            <h1>Ruta no encontrada</h1>
+            <p>Parece que te has aventurado fuera del mapa. El recurso en <code>{{path}}</code> no está disponible.</p>
+            
+            <div class="error-actions">
+                <a href="/" class="btn-back">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Regresar al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,83 @@
+<link rel="stylesheet" href="/static/css/users/users.css">
+
+<div class="user-dashboard">
+    <div class="header-actions">
+        <h1>Gestión de Usuarios</h1>
+        <button id="btnNewUser" class="btn-primary">
+            <i class="fas fa-plus"></i> + Nuevo Usuario
+        </button>
+    </div>
+
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+        </tbody>
+    </table>
+</div>
+
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Usuario</h2>
+        <form id="userForm">
+            <input type="hidden" name="id">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <input type="text" name="nombre" id="name" placeholder="Nombre(s)" required>
+                </div>
+
+                <div class="row-apellidos">
+                    <input type="text" name="ap" id="ap_paterno" placeholder="Ap. Paterno" required>
+                    <input type="text" name="am" id="ap_materno" placeholder="Ap. Materno">
+                </div>
+
+                <div class="form-group">
+                    <input type="email" name="email" id="emailInput" placeholder="Correo electrónico" required>
+                    <div id="error_email" class="error-text"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label-hint">Fecha de Nacimiento</label>
+                    <input 
+                        type="date" 
+                        name="fecha_nac" 
+                        id="birthdateInput"
+                        min="1900-01-01" 
+                        required
+                    >
+                    <div id="error_birthdate" class="error-text"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Nueva contraseña (opcional)">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" onclick="UserManager.closeModal()" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-save">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content confirm-delete">
+        <div class="warn-icon">⚠️</div>
+        <h2>¿Estás seguro?</h2>
+        <p>Esta acción no se puede deshacer. Se eliminará al usuario permanentemente.</p>
+        <div class="modal-actions">
+            <button type="button" onclick="UserManager.closeDeleteModal()" class="btn-secondary">No, cancelar</button>
+            <button type="button" id="confirmDeleteBtn" class="btn-danger">Sí, eliminar</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/users/users.js"></script>
