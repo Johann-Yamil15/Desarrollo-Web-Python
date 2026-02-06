@@ -30,5 +30,6 @@ def get_route_handler(path, method):
     if handler:
         return handler, '200 OK'
 
-    # Si no existe, devolvemos el controlador 404
+    # Retornamos la función directamente. 
+    # El servidor se encargará de pasarle los argumentos.
     return not_found_action, '404 Not Found'
