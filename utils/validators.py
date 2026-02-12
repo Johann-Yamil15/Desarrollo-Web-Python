@@ -4,59 +4,50 @@ from datetime import datetime
 def validate_form(data):
     errors = {}
 
-    # Nombre: solo letras y espacios, 1–50 caracteres, no solo espacios
-    name = data.get("name", "")
-    name_clean = name.strip()
+    # --- NOMBRE ---
+    nombre = data.get("nombre", "").strip()
+    if not nombre:
+        errors["nombre"] = "El nombre no puede estar vacío"
+    elif not re.fullmatch(r"[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+", nombre):
+        errors["nombre"] = "Usa solo letras y espacios"
 
-    if not name_clean:
-        errors["name"] = "El nombre no puede estar vacío"
-    elif len(name_clean) > 50:
-        errors["name"] = "El nombre no debe exceder 50 caracteres"
-    elif not re.fullmatch(r"[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+", name_clean):
-        errors["name"] = "Usa solo letras y espacios"
+    # --- APELLIDO PATERNO (ap) ---
+    ap = data.get("ap", "").strip()
+    if not ap:
+        errors["ap"] = "El apellido paterno es obligatorio"
+    elif not re.fullmatch(r"[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+", ap):
+        errors["ap"] = "Usa solo letras y espacios"
 
-    # Usuario: alfanumérico, 5–50 caracteres, sin espacios
-    username = data.get("username", "")
-    username_clean = username.strip()
+    # --- APELLIDO MATERNO (am) ---
+    am = data.get("am", "").strip()
+    # El materno suele ser opcional, pero si escriben algo, validamos que sean letras
+    if am and not re.fullmatch(r"[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+", am):
+        errors["am"] = "Usa solo letras y espacios"
 
-    if not username_clean:
-        errors["username"] = "El usuario no puede estar vacío"
-    elif len(username_clean) < 5:
-        errors["username"] = "Debe tener al menos 5 caracteres"
-    elif len(username_clean) > 50:
-        errors["username"] = "No debe exceder 50 caracteres"
-    elif not username_clean.isalnum():
-        errors["username"] = "Solo letras y números (sin espacios)"
+    # --- CORREO (INSTITUCIONAL Y MÚLTIPLES PUNTOS) ---
+    email = data.get("email", "").strip()
+    # Regex ajustada para permitir .edu.mx
+    email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]{2,})+$"
 
-    # Correo
-    email = data.get("email", "")
-    email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-    if not re.match(email_regex, email):
-        errors["email"] = "Formato de correo inválido"
+    if not email:
+        errors["email"] = "El correo es obligatorio"
+    elif not re.fullmatch(email_regex, email):
+        errors["email"] = "Formato inválido (ejemplo: usuario@uttt.edu.mx)"
 
-    # Teléfono: exactamente 10 dígitos
-    phone = data.get("phone", "")
-    if not re.fullmatch(r"\d{10}", phone):
-        errors["phone"] = "Deben ser exactamente 10 dígitos"
-
-    # Fecha de nacimiento
-    birthdate_str = data.get("birthdate", "")
-    if not birthdate_str:
-        errors["birthdate"] = "La fecha es obligatoria"
+    # --- FECHA DE NACIMIENTO ---
+    fecha_nac_str = data.get("fecha_nac", "")
+    if not fecha_nac_str:
+        errors["fecha_nac"] = "La fecha es obligatoria"
     else:
         try:
-            birth_date = datetime.strptime(birthdate_str, "%Y-%m-%d")
+            birth_date = datetime.strptime(fecha_nac_str, "%Y-%m-%d").date()
+            today = datetime.now().date()
 
-            if birth_date > datetime.now():
-                errors["birthdate"] = "No puedes haber nacido en el futuro"
+            if birth_date > today:
+                errors["fecha_nac"] = "La fecha no puede ser futura"
             elif birth_date.year < 1900:
-                errors["birthdate"] = f"El año {birth_date.year} es demasiado antiguo"
-
+                errors["fecha_nac"] = "El año es demasiado antiguo"
         except ValueError:
-            errors["birthdate"] = "Formato de fecha inválido"
-
-    # Checkbox términos
-    if not data.get("terms"):
-        errors["terms"] = "Debes aceptar para continuar"
+            errors["fecha_nac"] = "Formato de fecha inválido"
 
     return errors

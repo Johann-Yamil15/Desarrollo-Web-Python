@@ -3,6 +3,8 @@ from datetime import datetime, date
 from urllib.parse import parse_qs
 from core.render import render_view
 from services.user_service import UserService 
+# IMPORTA TU FUNCIÓN DE VALIDACIÓN
+from utils.validators import validate_form 
 
 def json_serial(obj):
     if isinstance(obj, (datetime, date)):
@@ -17,19 +19,29 @@ def user_api_dispatcher(environ, method):
     user_id_url = query_params.get('id', [None])[0]
 
     try:
-        # GET - Usamos UserService
         if method == 'GET':
             if user_id_url:
                 data = UserService.get_user_by_id(user_id_url)
             else:
                 data = UserService.get_all_users()
-            
             return json.dumps(data, default=json_serial).encode('utf-8')
 
-        # Procesar Body para POST/PUT/DELETE
         length = int(environ.get('CONTENT_LENGTH', 0))
         raw_body = environ['wsgi.input'].read(length).decode('utf-8') if length > 0 else "{}"
         body = json.loads(raw_body)
+
+        # --- VALIDACIÓN PARA POST Y PUT ---
+        if method in ['POST', 'PUT']:
+            # Ejecutamos las reglas (correo estricto, fecha no futura)
+            errores = validate_form(body)
+            
+            if errores:
+                # Si hay errores, respondemos inmediatamente sin tocar la DB
+                return json.dumps({
+                    "success": False, 
+                    "errors": errores, 
+                    "msg": "Corrija los errores en el formulario"
+                }).encode('utf-8')
 
         # POST - Crear
         if method == 'POST':
@@ -38,7 +50,6 @@ def user_api_dispatcher(environ, method):
 
         # PUT - Actualizar
         if method == 'PUT':
-            # Llamamos al nuevo método del servicio
             success = UserService.update_existing_user(body)
             return json.dumps({"success": success, "msg": "Actualizado correctamente" if success else "Error"}).encode('utf-8')
 

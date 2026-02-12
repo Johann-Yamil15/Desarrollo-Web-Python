@@ -5,7 +5,7 @@ const UserManager = {
         this.tableBody = document.getElementById('userTableBody');
         this.modal = document.getElementById('userModal');
         this.btnNew = document.getElementById('btnNewUser');
-        
+
         // Elementos de validación específicos
         this.birthdateInput = document.getElementById('birthdateInput');
         this.emailInput = document.getElementById('emailInput');
@@ -26,11 +26,11 @@ const UserManager = {
         const apPaterno = document.getElementById('ap_paterno');
         const apMaterno = document.getElementById('ap_materno');
 
-        const soloLetras = function(e) {
+        const soloLetras = function (e) {
             this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
         };
 
-        const prevenirEspacioInicial = function(e) {
+        const prevenirEspacioInicial = function (e) {
             if (e.key === ' ' && this.value.length === 0) {
                 e.preventDefault();
             }
@@ -43,19 +43,26 @@ const UserManager = {
             }
         });
 
-        // 2. FECHA: Configurar límite dinámico (Hoy)
+        // 2. FECHA: Configurar límite dinámico (Hoy local)
         if (this.birthdateInput) {
-            this.birthdateInput.max = new Date().toISOString().split("T")[0];
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+
+            const todayLocal = `${year}-${month}-${day}`;
+            this.birthdateInput.max = todayLocal;
         }
 
-        // 3. LIMPIEZA DE ERRORES: Quitar mensajes rojos al escribir
-        [this.birthdateInput, this.emailInput].forEach(input => {
-            if (input) {
-                input.addEventListener('input', () => {
-                    const errorId = input.id === 'birthdateInput' ? 'error_birthdate' : 'error_email';
-                    const errorDiv = document.getElementById(errorId);
-                    if (errorDiv) errorDiv.innerText = "";
-                });
+        // 3. Validación extra al perder el foco (opcional pero recomendada)
+        this.birthdateInput.addEventListener('blur', () => {
+            const selectedDate = new Date(this.birthdateInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate > today) {
+                document.getElementById('error_birthdate').innerText = "No se permiten fechas futuras";
+                this.birthdateInput.value = ""; // Limpia el campo
             }
         });
     },
@@ -95,7 +102,7 @@ const UserManager = {
             try {
                 const res = await fetch(`/api/users?id=${id}`);
                 const u = await res.json();
-                
+
                 this.form.nombre.value = u.nombre || "";
                 this.form.ap.value = u.ap || "";
                 this.form.am.value = u.am || "";
@@ -128,7 +135,7 @@ const UserManager = {
     async handleSubmit(e) {
         e.preventDefault();
         this.clearErrors();
-        
+
         const data = Object.fromEntries(new FormData(this.form));
         const method = data.id ? 'PUT' : 'POST';
 
@@ -138,9 +145,9 @@ const UserManager = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-            
+
             const result = await res.json();
-            
+
             if (result.success) {
                 this.showToast(result.msg, true);
                 this.closeModal();
