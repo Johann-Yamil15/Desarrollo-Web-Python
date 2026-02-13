@@ -448,3 +448,56 @@ input:invalid {
     background-color: #f8fafc !important;
     outline: none;
 }
+
+/* Estilos específicos para el modal de eliminación */
+.confirm-delete {
+    text-align: center;
+    padding: 2rem !important;
+    max-width: 400px !important;
+}
+
+.warn-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.confirm-delete h2 {
+    color: #1e293b;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.confirm-delete p {
+    color: #64748b;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e8f0;
+}

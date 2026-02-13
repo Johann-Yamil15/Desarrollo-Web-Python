@@ -174,7 +174,22 @@ const UserManager = {
     },
 
     async delete(id) {
-        if (!confirm("¿Estás seguro de que deseas eliminar este usuario?")) return;
+        // Guardamos el ID que queremos eliminar en una propiedad temporal
+        this.userToDeleteId = id;
+
+        // Mostramos el modal de confirmación
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.style.display = 'flex';
+
+        // Configuramos el botón de confirmación (removiendo listeners previos para evitar ejecuciones múltiples)
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        confirmBtn.onclick = () => this.executeDelete();
+    },
+
+    async executeDelete() {
+        const id = this.userToDeleteId;
+        if (!id) return;
+
         try {
             const res = await fetch('/api/users', {
                 method: 'DELETE',
@@ -184,14 +199,20 @@ const UserManager = {
             const result = await res.json();
 
             if (result.success) {
-                this.showToast(result.msg, 'warning'); // Usamos warning para eliminaciones
+                this.showToast(result.msg, 'warning');
                 this.loadUsers();
             } else {
                 this.showToast(result.msg, 'error');
             }
         } catch (e) {
             this.showToast("Error al eliminar", 'error');
+        } finally {
+            this.closeDeleteModal();
         }
+    },
+    closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+        this.userToDeleteId = null;
     },
 
     async handleSubmit(e) {
