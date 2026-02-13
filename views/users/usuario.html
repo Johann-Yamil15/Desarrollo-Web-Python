@@ -1,8 +1,42 @@
 <link rel="stylesheet" href="/static/css/users/users.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <div class="user-dashboard">
     <div class="header-actions">
         <h1>Gestión de Usuarios</h1>
+
+        <div class="search-section-wrapper">
+            <div class="google-pill-container" id="searchPill">
+                <div class="main-search-part">
+                    <i class="fas fa-search search-icon-muted"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por nombre o apellidos...">
+                </div>
+
+                <div id="advancedFilters" class="expanding-filter-box collapsed">
+                    <div class="v-divider"></div>
+                    <div class="date-inputs-flex">
+                        <div class="input-group-minimal">
+                            <label>Desde</label>
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div class="input-group-minimal">
+                            <label>Hasta</label>
+                            <input type="date" id="dateTo">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pill-actions">
+                    <button id="btnToggleFilters" class="action-circle-btn" title="Filtros">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <button id="btnClearFilters" class="action-circle-btn delete-btn" title="Limpiar">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <button id="btnNewUser" class="btn-primary">
             <i class="fas fa-plus"></i> Nuevo Usuario
         </button>
@@ -11,9 +45,9 @@
     <table class="modern-table">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Nombre</th>
                 <th>Email</th>
+                <th>Fecha de Nacimiento</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -45,13 +79,7 @@
 
                 <div class="form-group">
                     <label class="label-hint">Fecha de Nacimiento</label>
-                    <input 
-                        type="date" 
-                        name="fecha_nac" 
-                        id="birthdateInput"
-                        min="1900-01-01" 
-                        required
-                    >
+                    <input type="date" name="fecha_nac" id="birthdateInput" min="1900-01-01" required>
                     <div id="error_birthdate" class="error-text"></div>
                 </div>
 
