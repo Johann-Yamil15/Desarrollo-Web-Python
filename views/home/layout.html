@@ -11,7 +11,9 @@
 </head>
 
 <body>
-    <aside class="sidebar">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="user-context">
                 <div class="avatar">PY</div>
@@ -55,6 +57,10 @@
     <div class="main-content">
         <nav class="breadcrumb-bar d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
+                <button class="mobile-toggle" id="btnToggle">
+                    <i data-lucide="menu"></i>
+                </button>
+
                 <i data-lucide="folder" size="14" style="margin-right: 8px;"></i>
                 {{breadcrumbs_placeholder}}
             </div>

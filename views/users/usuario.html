@@ -14,14 +14,18 @@
 
                 <div id="advancedFilters" class="expanding-filter-box collapsed">
                     <div class="v-divider"></div>
-                    <div class="date-inputs-flex">
-                        <div class="input-group-minimal">
-                            <label>Desde</label>
-                            <input type="date" id="dateFrom">
-                        </div>
-                        <div class="input-group-minimal">
-                            <label>Hasta</label>
-                            <input type="date" id="dateTo">
+
+                    <div class="filter-content-wrapper">
+                        <div class="filter-group-title">Rango de fechas de nacimiento</div>
+                        <div class="date-inputs-flex">
+                            <div class="input-group-minimal">
+                                <label>Desde</label>
+                                <input type="date" id="dateFrom">
+                            </div>
+                            <div class="input-group-minimal">
+                                <label>Hasta</label>
+                                <input type="date" id="dateTo">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,7 +106,8 @@
         <h2>¿Estás seguro?</h2>
         <p>Esta acción no se puede deshacer. Se eliminará al usuario permanentemente.</p>
         <div class="modal-actions">
-            <button type="button" onclick="UserManager.closeDeleteModal()" class="btn-secondary">No, cancelar</button>
+            <button type="button" onclick="UserManager.closeDeleteModal()" class="btn-secondary">No,
+                cancelar</button>
             <button type="button" id="confirmDeleteBtn" class="btn-danger">Sí, eliminar</button>
         </div>
     </div>

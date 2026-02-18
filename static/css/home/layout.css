@@ -14,7 +14,6 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: #fff;
     overflow: hidden;
-    /* Evita scroll doble en el body */
 }
 
 /* --- SIDEBAR --- */
@@ -26,8 +25,8 @@ body {
     flex-direction: column;
     background: var(--bg-light);
     height: 100%;
-    transition: transform 0.3s ease;
-    /* Para efecto mobile */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
 }
 
 .sidebar-header {
@@ -39,7 +38,6 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    cursor: pointer;
 }
 
 .avatar {
@@ -95,21 +93,19 @@ body {
     color: var(--render-blue);
     font-weight: 500;
     box-shadow: inset 3px 0 0 var(--render-blue);
-    /* Línea azul lateral */
 }
 
-/* --- MAIN CONTENT AREA (El área que quieres ancha) --- */
+/* --- MAIN CONTENT --- */
 .main-content {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
     min-width: 0;
-    /* Importante para que el flexbox no se rompa */
     background: #fff;
+    position: relative;
 }
 
-/* Breadcrumbs fluidos */
 .breadcrumb-bar {
     display: flex;
     align-items: center;
@@ -117,76 +113,84 @@ body {
     background-color: #ffffff;
     border-bottom: 1px solid var(--border-color);
     font-size: 13px;
-    gap: 8px;
-    white-space: nowrap;
-    overflow-x: auto;
-    /* Scroll si el breadcrumb es muy largo en móvil */
+    min-height: 56px;
+    z-index: 100;
 }
 
-/* Contenedor del Body (Ajustado al máximo espacio) */
+/* --- CORRECCIÓN BREADCRUMBS --- */
+/* Estilo para que no parezca enlace azul y sea negrita */
+.breadcrumb-bar a, 
+.breadcrumb-bar span {
+    text-decoration: none !important;
+    color: #333 !important; /* Color oscuro neutral */
+    font-weight: 600 !important; /* Negritas */
+}
+
+.breadcrumb-bar a:hover {
+    color: var(--render-blue) !important;
+}
+
 .body-container {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 0;
-    /* Quitamos padding para que el Hero toque los bordes si quieres */
     width: 100%;
+    background-color: #fcfcfc;
 }
 
-/* --- RESPONSIVE DESIGN --- */
-
-/* Tablets y Laptops pequeñas */
-@media (max-width: 1024px) {
-    :root {
-        --sidebar-width: 240px;
-    }
+/* --- NUEVO: FILTROS Y RANGO DE FECHAS --- */
+.expanding-filter-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-/* Celulares */
-@media (max-width: 768px) {
-    body {
-        flex-direction: column;
-        /* Apila si es necesario */
-    }
-
-    .sidebar {
-        display: none;
-        /* En una app real, aquí usarías un menú hamburguesa */
-    }
-
-    .breadcrumb-bar {
-        padding: 10px 15px;
-    }
-
-    .hero-container {
-        flex-direction: column !important;
-        /* El hero que hicimos antes se vuelve vertical */
-        padding: 30px 20px !important;
-        margin: 10px !important;
-    }
-
-    .status-card {
-        margin-left: 0 !important;
-        margin-top: 20px;
-        width: 100%;
-    }
+/* Contenedor para el título y los inputs */
+.filter-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-/* Estilos para el disparador del menú de usuario */
+/* Estilo del título solicitado */
+.filter-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.date-inputs-flex {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-group-minimal {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-group-minimal label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #999;
+}
+
+/* --- PERFIL Y DROPDOWN --- */
 .user-profile-trigger {
     padding: 4px 8px;
     border-radius: 8px;
     transition: background 0.2s;
-}
-
-.user-profile-trigger:hover {
-    background: #f0f0f0;
+    cursor: pointer;
 }
 
 .avatar-sm {
     width: 28px;
     height: 28px;
-    background: #4d4dff;
-    /* Color similar a tu sidebar */
+    background: var(--render-blue);
     color: white;
     border-radius: 50%;
     display: flex;
@@ -202,42 +206,71 @@ body {
     color: #333;
 }
 
-/* Ajustes del Dropdown */
 .dropdown-menu {
-    border-radius: 12px;
-    min-width: 230px;
-    padding: 8px 0;
-    /* CAMBIO: Forzamos el posicionamiento sobre cualquier otro elemento */
-    z-index: 2000 !important; 
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    z-index: 2000 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
 }
 
-.dropdown-item {
-    font-size: 0.85rem;
-    transition: all 0.2s;
+/* --- RESPONSIVE DESIGN --- */
+.mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 6px;
 }
 
-.dropdown-item:hover {
-    background-color: #f8f9fa;
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 998;
 }
 
-/* Sincronización con el ancho de la barra */
-.breadcrumb-bar {
-    display: flex;
-    align-items: center;
-    padding: 12px 25px;
-    background-color: #ffffff;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 13px;
-    gap: 8px;
-    /* CAMBIO: Eliminamos overflow-x: auto que causa el scroll interno */
-    overflow: visible !important; 
-    position: relative;
-    z-index: 1050; /* Por debajo del sidebar pero sobre el contenido */
-}
-.breadcrumb-bar > div:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex-shrink: 1;
+@media (max-width: 768px) {
+    .mobile-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1100;
+        min-width: 280px; 
+        width: 280px;
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 15px 0 30px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .main-content {
+        width: 100vw;
+        flex-shrink: 0;
+    }
+
+    .user-name-text {
+        display: none;
+    }
+
+    .breadcrumb-bar {
+        padding: 10px 15px;
+    }
 }

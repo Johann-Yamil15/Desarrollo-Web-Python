@@ -48,6 +48,22 @@ const UserManager = {
         });
     },
 
+    renderSkeleton() {
+        const skeletonRow = `
+            <tr>
+                <td><div class="skeleton skeleton-text"></div></td>
+                <td><div class="skeleton skeleton-text"></div></td>
+                <td><div class="skeleton skeleton-text"></div></td>
+                <td>
+                    <div class="skeleton skeleton-btn"></div>
+                    <div class="skeleton skeleton-btn"></div>
+                </td>
+            </tr>
+        `;
+        // Repetimos la fila 5 veces para llenar la tabla
+        this.tableBody.innerHTML = skeletonRow.repeat(5);
+    },
+
     // --- RENDERIZADO DE TABLA ---
     renderTable(users) {
         if (Array.isArray(users) && users.length > 0) {
@@ -68,13 +84,16 @@ const UserManager = {
     },
 
     async loadUsers() {
+        this.renderSkeleton(); // <--- Agregado: Mostrar skeletons antes del fetch
         try {
             const res = await fetch('/api/users');
             const data = await res.json();
+            // El renderTable sustituirá los skeletons automáticamente al terminar
             this.allUsers = Array.isArray(data) ? data : [];
             this.renderTable(this.allUsers);
         } catch (e) {
             this.showToast("Error de conexión al cargar lista", 'error');
+            this.tableBody.innerHTML = '<tr><td colspan="4">Error al cargar datos.</td></tr>';
         }
     },
 
@@ -190,6 +209,12 @@ const UserManager = {
         const id = this.userToDeleteId;
         if (!id) return;
 
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmBtn.disabled) return;
+
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "Eliminando...";
+
         try {
             const res = await fetch('/api/users', {
                 method: 'DELETE',
@@ -200,44 +225,69 @@ const UserManager = {
 
             if (result.success) {
                 this.showToast(result.msg, 'warning');
-                this.loadUsers();
+                await this.loadUsers();
             } else {
                 this.showToast(result.msg, 'error');
+                // Re-habilitar si falló el borrado por lógica de negocio
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = "Confirmar";
             }
         } catch (e) {
             this.showToast("Error al eliminar", 'error');
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = "Confirmar";
         } finally {
             this.closeDeleteModal();
         }
-    },
-    closeDeleteModal() {
-        document.getElementById('deleteModal').style.display = 'none';
-        this.userToDeleteId = null;
     },
 
     async handleSubmit(e) {
         e.preventDefault();
         this.clearErrors();
+
+        // 1. Identificar y bloquear el botón
+        const submitBtn = this.form.querySelector('button[type="submit"]');
+        if (!submitBtn || submitBtn.disabled) return; // Si ya está bloqueado, salir
+
+        const originalText = submitBtn.innerText;
+        submitBtn.disabled = true; // Bloqueo funcional
+        submitBtn.style.opacity = "0.7";
+        submitBtn.innerText = "Guardando..."; // Feedback visual
+
         const data = Object.fromEntries(new FormData(this.form));
-        const method = data.id ? 'PUT' : 'POST';
+
         try {
             const res = await fetch('/api/users', {
-                method: method,
+                method: data.id ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
+
             const result = await res.json();
 
             if (result.success) {
                 this.showToast(result.msg, 'success');
                 this.closeModal();
-                this.loadUsers();
+                await this.loadUsers();
+                // Nota: Al cerrar el modal y resetear el form, el botón vuelve a su estado natural solo
             } else {
+                // Error de validación (ej. correo duplicado)
                 this.handleBackendErrors(result.errors);
-                this.showToast(result.msg || "Verifica los datos", 'error');
+                this.showToast(result.msg || "Error de validación", 'error');
+
+                // RE-HABILITAMOS para que el usuario corrija y vuelva a intentar
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+                submitBtn.innerText = originalText;
             }
         } catch (e) {
-            this.showToast("Error al guardar datos", 'error');
+            console.error("Detalle técnico:", e);
+            this.showToast("Error de conexión. Intente de nuevo.", 'error');
+
+            // RE-HABILITAMOS en caso de error de red
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+            submitBtn.innerText = originalText;
         }
     },
 
@@ -264,6 +314,14 @@ const UserManager = {
             container.className = 'toast-container';
             document.body.appendChild(container);
         }
+
+        // --- LÓGICA ANTISPAM ---
+        // Buscamos si ya existe un toast con el mismo mensaje exacto
+        const existingToasts = Array.from(container.querySelectorAll('.toast-message'));
+        const isDuplicate = existingToasts.some(t => t.innerText === msg);
+
+        if (isDuplicate) return; // Si ya existe uno igual, no hacemos nada
+        // -----------------------
 
         const config = {
             success: { icon: 'fa-check-circle', title: 'Éxito' },

@@ -15,7 +15,7 @@ def not_found_action(bc=None, env=None):
     context = {
         "titulo": "404 - No Encontrado",
         "breadcrumbs": [
-            {"name": "Inicio", "url": "/"},
+            {"name": "My Project", "url": "/"},
             {"name": "Error 404", "url": "#"}
         ],
         "path": path_erroneo

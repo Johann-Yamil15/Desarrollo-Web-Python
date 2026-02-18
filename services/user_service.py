@@ -12,14 +12,14 @@ class UserService:
         try:
             cursor.execute("SELECT * FROM Usuarios ORDER BY Id DESC")
             rows = cursor.fetchall()
-            print(f" DEBUG: Filas encontradas en DB: {len(rows)}")
+            # print(f" DEBUG: Filas encontradas en DB: {len(rows)}")
             
             users_list = []
             for row in rows:
                 obj = User.from_dict(row)
                 users_list.append(obj.to_dict())
             
-            print(f" DEBUG: Lista final a retornar: {users_list}")
+            # print(f" DEBUG: Lista final a retornar: {users_list}")
             return users_list
         except Exception as e:
             print(f" ERROR en get_all_users: {e}")
@@ -48,10 +48,16 @@ class UserService:
             cursor.execute(query, params)
             conn.commit()
             print(" DEBUG: Registro exitoso en DB")
-            return True
+            return True, "Usuario registrado exitosamente"
         except Exception as e:
-            print(f" ERROR en registro: {e}")
-            return False
+            error_msg = str(e)
+            print(f" ERROR en registro: {error_msg}")
+            
+            # Detectar específicamente la violación de UNIQUE KEY (Error 2627)
+            if "2627" in error_msg or "UQ__Usuarios" in error_msg:
+                return False, "Este correo electrónico ya está registrado"
+            
+            return False, f"Error en base de datos: {error_msg}"
         finally:
             conn.close()
 
@@ -89,10 +95,10 @@ class UserService:
             
             cursor.execute(query, params)
             conn.commit()
-            return True
+            return True, "Usuario actualizado correctamente"
         except Exception as e:
             print(f" ERROR en update: {e}")
-            return False
+            return False, str(e)
         finally:
             conn.close()
 
@@ -104,9 +110,9 @@ class UserService:
         try:
             cursor.execute("DELETE FROM Usuarios WHERE Id = %s", (user_id,))
             conn.commit()
-            return True
+            return True, "Usuario Eliminado correctamente"
         except Exception as e:
             print(f" ERROR en delete: {e}")
-            return False
+            return False, str(e)
         finally:
             conn.close()
