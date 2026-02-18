@@ -40,9 +40,9 @@ class UserService:
         conn = get_connection()
         cursor = conn.cursor()
         try:
-            query = """INSERT INTO Usuarios (Nombre, ApellidoP, ApellidoM, Email, FechaNacimiento, PasswordHash, FechaRegistro) 
-                       VALUES (%s, %s, %s, %s, %s, %s, GETDATE())"""
-            params = (user.nombre, user.ap, user.am, user.email, user.fecha_nac, user.password_hash)
+            query = """INSERT INTO Usuarios (Nombre, ApellidoP, ApellidoM, Email, FechaNacimiento, PasswordHash, FechaRegistro, Departamento_id) 
+                       VALUES (%s, %s, %s, %s, %s, %s, GETDATE(), %s)"""
+            params = (user.nombre, user.ap, user.am, user.email, user.fecha_nac, user.password_hash, user.departamento_id)
             print(f" DEBUG: Ejecutando INSERT con: {params}")
             
             cursor.execute(query, params)
@@ -88,9 +88,9 @@ class UserService:
         conn = get_connection()
         cursor = conn.cursor()
         try:
-            query = """UPDATE Usuarios SET Nombre=%s, ApellidoP=%s, ApellidoM=%s, Email=%s, FechaNacimiento=%s 
+            query = """UPDATE Usuarios SET Nombre=%s, ApellidoP=%s, ApellidoM=%s, Email=%s, FechaNacimiento=%s, departamento_id=%s 
                        WHERE Id=%s"""
-            params = (user.nombre, user.ap, user.am, user.email, user.fecha_nac, user.id)
+            params = (user.nombre, user.ap, user.am, user.email, user.fecha_nac, user.departamento_id, user.id)
             print(f" DEBUG: Actualizando ID {user.id} con datos: {params}")
             
             cursor.execute(query, params)

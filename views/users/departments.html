@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="/static/css/users/users.css">
+<link rel="stylesheet" href="/static/css/users/depto.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="user-dashboard">
+    <div class="header-actions">
+        <h1>Gestión de Departamentos y Permisos</h1>
+    </div>
+
+    <div class="table-container shadow-sm">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">NOMBRE</th>
+                    <th style="width: 35%;">DESCRIPCIÓN</th>
+                    <th style="width: 25%;">PERMISOS (R, C, U, D)</th>
+                    <th style="width: 20%;">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody id="deptoTableBody">
+                </tbody>
+            <tfoot>
+                <tr id="addRowTrigger" class="add-row-trigger">
+                    <td colspan="4" onclick="DeptoManager.addNewInlineRow()">
+                        <i class="fas fa-plus-circle"></i> Haga clic aquí para agregar un nuevo departamento...
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script src="/static/js/users/deptos.js"></script>

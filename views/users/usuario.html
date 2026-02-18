@@ -51,6 +51,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Email</th>
+                <th>Departamento</th>
                 <th>Fecha de Nacimiento</th>
                 <th>Acciones</th>
             </tr>
@@ -88,7 +89,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="label-hint">Contraseña</label>
                     <input type="password" name="password" placeholder="Nueva contraseña (opcional)">
+                </div>
+
+                <div class="form-group">
+                    <label>Departamento</label>
+                    <select name="departamento_id" id="deptoSelect" class="custom-select" required>
+                        <option value="">Seleccione un departamento...</option>
+                    </select>
+                    <div id="error_depto" class="error-text"></div>
                 </div>
             </div>
 

@@ -3,12 +3,15 @@ from controllers.user_controller import user_manager_action, user_api_dispatcher
 from controllers.carrusel_controller import carrusel_controller  # <--- IMPORTANTE
 from controllers.error_controller import not_found_action
 from controllers.pruebaform_controller import form_test
+from controllers.departments_controller import department_api_dispatcher, department_manager_action
+
 
 def get_route_handler(path, method):
     # Diccionario de rutas: (path, method) -> function
     routes = {
         ('/', 'GET'): lambda bc, env: index_action(bc),
         ('/users', 'GET'): lambda bc, env: user_manager_action(bc),
+        ('/departments', 'GET'): lambda bc, env: department_manager_action(bc),
 
         # Estos sí usan ambos
         ('/carrusel', 'GET'): lambda bc, env: carrusel_controller(bc, env),
@@ -23,6 +26,12 @@ def get_route_handler(path, method):
         ('/api/users', 'POST'): lambda bc, env: user_api_dispatcher(env, 'POST'),
         ('/api/users', 'PUT'): lambda bc, env: user_api_dispatcher(env, 'PUT'),
         ('/api/users', 'DELETE'): lambda bc, env: user_api_dispatcher(env, 'DELETE'),
+
+        # La API de departamentos
+        ('/api/departments', 'GET'): lambda bc, env: department_api_dispatcher(env, 'GET'),
+        ('/api/departments', 'POST'): lambda bc, env: department_api_dispatcher(env, 'POST'),
+        ('/api/departments', 'PUT'): lambda bc, env: department_api_dispatcher(env, 'PUT'),
+        ('/api/departments', 'DELETE'): lambda bc, env: department_api_dispatcher(env, 'DELETE'),
     }
 
     handler = routes.get((path, method))
@@ -30,6 +39,6 @@ def get_route_handler(path, method):
     if handler:
         return handler, '200 OK'
 
-    # Retornamos la función directamente. 
+    # Retornamos la función directamente.
     # El servidor se encargará de pasarle los argumentos.
     return not_found_action, '404 Not Found'

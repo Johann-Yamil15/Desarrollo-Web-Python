@@ -1,5 +1,5 @@
 class User:
-    def __init__(self, id=None, nombre=None, ap=None, am=None, email=None, fecha_nac=None, password_hash=None):
+    def __init__(self, id=None, nombre=None, ap=None, am=None, email=None, fecha_nac=None, password_hash=None, departamento_id=None):
         self.id = id
         self.nombre = nombre
         self.ap = ap
@@ -7,6 +7,7 @@ class User:
         self.email = email
         self.fecha_nac = fecha_nac
         self.password_hash = password_hash
+        self.departamento_id = departamento_id
 
     @staticmethod
     def from_dict(data):
@@ -24,7 +25,8 @@ class User:
             am=data.get('ApellidoM') or data.get('am'),
             email=data.get('Email') or data.get('email'),
             fecha_nac=data.get('FechaNacimiento') or data.get('fecha_nac'),
-            password_hash=data.get('PasswordHash') or data.get('password_hash')
+            password_hash=data.get('PasswordHash') or data.get('password_hash'),
+            departamento_id=data.get('departamento_id') or data.get('DepartamentoId')
         )
         
         print(f" DEBUG: Objeto User creado -> ID: {user.id}, Nombre: {user.nombre}")
@@ -37,7 +39,8 @@ class User:
             "ap": self.ap,
             "am": self.am,
             "email": self.email,
-            "fecha_nac": str(self.fecha_nac) if self.fecha_nac else None
+            "fecha_nac": str(self.fecha_nac) if self.fecha_nac else None,
+            "departamento_id": self.departamento_id
         }
         if include_password:
             user_dict["password_hash"] = self.password_hash

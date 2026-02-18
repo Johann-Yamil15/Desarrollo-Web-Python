@@ -1,11 +1,14 @@
 const UserManager = {
     allUsers: [], // Lista original para filtrado local
+    allDepartments: [],
 
     init() {
         this.form = document.getElementById('userForm');
         this.tableBody = document.getElementById('userTableBody');
         this.modal = document.getElementById('userModal');
         this.btnNew = document.getElementById('btnNewUser');
+
+        this.deptoSelect = document.getElementById('deptoSelect');
 
         // Inputs de búsqueda y filtros
         this.searchInput = document.getElementById('searchInput');
@@ -21,6 +24,7 @@ const UserManager = {
 
         this.bindEvents();
         this.setupValidations();
+        this.loadDepartments();
         this.loadUsers();
     },
 
@@ -54,6 +58,7 @@ const UserManager = {
                 <td><div class="skeleton skeleton-text"></div></td>
                 <td><div class="skeleton skeleton-text"></div></td>
                 <td><div class="skeleton skeleton-text"></div></td>
+                <td><div class="skeleton skeleton-text"></div></td> 
                 <td>
                     <div class="skeleton skeleton-btn"></div>
                     <div class="skeleton skeleton-btn"></div>
@@ -64,22 +69,50 @@ const UserManager = {
         this.tableBody.innerHTML = skeletonRow.repeat(5);
     },
 
+    // --- CARGAR DEPARTAMENTOS ---
+    async loadDepartments() {
+        try {
+            const res = await fetch('/api/departments'); // Asegúrate de tener esta ruta en tu API
+            const data = await res.json();
+            this.allDepartments = Array.isArray(data) ? data : [];
+            this.renderDeptos();
+        } catch (e) {
+            console.error("Error cargando departamentos:", e);
+        }
+    },
+
+    renderDeptos() {
+        if (!this.deptoSelect) return;
+
+        const options = this.allDepartments.map(d =>
+            `<option value="${d.id}">${d.nombre}</option>`
+        ).join('');
+
+        this.deptoSelect.innerHTML = `<option value="">Seleccione un departamento...</option>` + options;
+    },
+
     // --- RENDERIZADO DE TABLA ---
     renderTable(users) {
         if (Array.isArray(users) && users.length > 0) {
-            this.tableBody.innerHTML = users.map(u => `
+            this.tableBody.innerHTML = users.map(u => {
+                // Buscamos el nombre del departamento para mostrarlo en la tabla
+                const depto = this.allDepartments.find(d => d.id == u.departamento_id);
+                const deptoNombre = depto ? depto.nombre : '<span class="text-muted">Sin asignar</span>';
+
+                return `
                 <tr>
                     <td>${u.nombre} ${u.ap} ${u.am || ''}</td>
                     <td>${u.email}</td>
+                    <td>${deptoNombre}</td>
                     <td>${u.fecha_nac}</td>
                     <td>
                         <button class="btn-edit" onclick="UserManager.openModal(${u.id})">Editar</button>
                         <button class="btn-delete" onclick="UserManager.delete(${u.id})">Eliminar</button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         } else {
-            this.tableBody.innerHTML = '<tr><td colspan="4">No se encontraron registros.</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="5">No se encontraron registros.</td></tr>';
         }
     },
 
@@ -194,6 +227,9 @@ const UserManager = {
                 this.form.am.value = u.am || "";
                 this.form.email.value = u.email || "";
                 this.form.fecha_nac.value = u.fecha_nac || "";
+                if (this.deptoSelect) {
+                    this.deptoSelect.value = u.departamento_id || "";
+                }
             } catch (e) {
                 this.showToast("Error al obtener datos", 'error');
             }
@@ -205,12 +241,12 @@ const UserManager = {
     async delete(id) {
         this.userToDeleteId = id;
         const deleteModal = document.getElementById('deleteModal');
-        
+
         // Resetear botón de confirmar por si acaso quedó trabado
         const confirmBtn = document.getElementById('confirmDeleteBtn');
         confirmBtn.disabled = false;
         confirmBtn.innerText = "Sí, eliminar";
-        
+
         deleteModal.style.display = 'flex';
         confirmBtn.onclick = () => this.executeDelete();
     },

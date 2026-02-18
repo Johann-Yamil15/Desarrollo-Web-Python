@@ -578,3 +578,38 @@ button:disabled {
     filter: grayscale(0.5);
     pointer-events: none;
 }
+
+/* Estilo base para el Select e Inputs para que se vean iguales */
+.custom-select, 
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 1px solid #e2e8f0; /* Gris claro como tus inputs */
+    border-radius: 8px;       /* Bordes redondeados */
+    background-color: #ffffff;
+    color: #4a5568;
+    transition: all 0.3s ease;
+    appearance: none;         /* Quita el diseño por defecto de Windows/Mac */
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a0aec0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+/* Efecto al hacer clic o posicionarse (Igual al azul de tus botones) */
+.custom-select:focus {
+    outline: none;
+    border-color: #5d5fef; /* El azul de tu botón "Guardar" */
+    box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
+}
+
+/* Estilo para las etiquetas */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 13px;
+}

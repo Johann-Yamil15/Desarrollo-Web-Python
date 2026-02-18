@@ -274,3 +274,40 @@ body {
         padding: 10px 15px;
     }
 }
+/* --- ESTILOS PARA DROPDOWN EN SIDEBAR --- */
+
+/* Contenedor del grupo */
+.nav-dropdown-wrapper {
+    width: 100%;
+}
+
+/* Sangría para los sub-elementos */
+.nav-sub-items {
+    background: #f5f5f5; /* Un tono ligeramente más oscuro para dar profundidad */
+}
+
+.sub-link {
+    padding-left: 45px !important; /* Más sangría para diferenciar de los principales */
+    font-size: 0.85rem !important;
+}
+
+/* Animación de la flecha (Chevron) */
+.chevron-icon {
+    transition: transform 0.3s ease;
+    opacity: 0.5;
+}
+
+/* Cuando el menú NO está colapsado (está abierto) */
+.nav-link[aria-expanded="true"] .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.nav-link[aria-expanded="true"] {
+    color: var(--render-blue);
+    background: #f0f0f0;
+}
+
+/* Espaciado interno para los iconos de submenú */
+.gap-12 {
+    gap: 12px;
+}
