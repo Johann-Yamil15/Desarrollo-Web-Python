@@ -173,6 +173,15 @@ const UserManager = {
     async openModal(id = null) {
         this.form.reset();
         this.clearErrors();
+
+        // Importante: Resetear el estado del botón al abrir
+        const submitBtn = this.form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+            submitBtn.innerText = id ? 'Guardar Cambios' : 'Registrar Usuario';
+        }
+
         this.form.id.value = id || "";
         document.getElementById('modalTitle').innerText = id ? 'Editar Usuario' : 'Nuevo Usuario';
 
@@ -192,16 +201,17 @@ const UserManager = {
         this.modal.style.display = 'flex';
     },
 
+    // --- ELIMINAR ---
     async delete(id) {
-        // Guardamos el ID que queremos eliminar en una propiedad temporal
         this.userToDeleteId = id;
-
-        // Mostramos el modal de confirmación
         const deleteModal = document.getElementById('deleteModal');
-        deleteModal.style.display = 'flex';
-
-        // Configuramos el botón de confirmación (removiendo listeners previos para evitar ejecuciones múltiples)
+        
+        // Resetear botón de confirmar por si acaso quedó trabado
         const confirmBtn = document.getElementById('confirmDeleteBtn');
+        confirmBtn.disabled = false;
+        confirmBtn.innerText = "Sí, eliminar";
+        
+        deleteModal.style.display = 'flex';
         confirmBtn.onclick = () => this.executeDelete();
     },
 
@@ -226,6 +236,7 @@ const UserManager = {
             if (result.success) {
                 this.showToast(result.msg, 'warning');
                 await this.loadUsers();
+                this.closeDeleteModal();
             } else {
                 this.showToast(result.msg, 'error');
                 // Re-habilitar si falló el borrado por lógica de negocio
@@ -239,6 +250,12 @@ const UserManager = {
         } finally {
             this.closeDeleteModal();
         }
+    },
+
+    closeDeleteModal() {
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.style.display = 'none';
+        this.userToDeleteId = null;
     },
 
     async handleSubmit(e) {
