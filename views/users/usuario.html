@@ -3,7 +3,7 @@
 
 <div class="user-dashboard">
     <div class="header-actions">
-        <h1>Gestión de Usuarios</h1>
+        <h1>Usuarios</h1>
 
         <div class="search-section-wrapper">
             <div class="google-pill-container" id="searchPill">
@@ -42,7 +42,7 @@
         </div>
 
         <button id="btnNewUser" class="btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Usuario
+            <i class="fas fa-plus"></i> Nuevo
         </button>
     </div>
 
@@ -59,6 +59,26 @@
         <tbody id="userTableBody">
         </tbody>
     </table>
+    <div class="pagination-container">
+
+        <div class="pagination-controls">
+            <button id="btnFirst" class="btn-page" title="Inicio">
+                <i class="fas fa-angle-double-left"></i>
+            </button>
+            <button id="btnPrev" class="btn-page" title="Anterior">
+                <i class="fas fa-angle-left"></i>
+            </button>
+
+            <span id="currentPageIndicator" class="page-text">Página 1 de 2</span>
+
+            <button id="btnNext" class="btn-page" title="Siguiente">
+                <i class="fas fa-angle-right"></i>
+            </button>
+            <button id="btnLast" class="btn-page" title="Final">
+                <i class="fas fa-angle-double-right"></i>
+            </button>
+        </div>
+    </div>
 </div>
 
 <div id="userModal" class="modal">

@@ -1,13 +1,15 @@
 const UserManager = {
-    allUsers: [], // Lista original para filtrado local
+    allUsers: [], 
+    filteredUsers: [], // Para guardar el resultado de filtros antes de paginar
     allDepartments: [],
+    currentPage: 1,
+    rowsPerPage: 5,
 
     init() {
         this.form = document.getElementById('userForm');
         this.tableBody = document.getElementById('userTableBody');
         this.modal = document.getElementById('userModal');
         this.btnNew = document.getElementById('btnNewUser');
-
         this.deptoSelect = document.getElementById('deptoSelect');
 
         // Inputs de búsqueda y filtros
@@ -22,6 +24,13 @@ const UserManager = {
         this.birthdateInput = document.getElementById('birthdateInput');
         this.emailInput = document.getElementById('emailInput');
 
+        // Elementos de paginación
+        this.btnFirst = document.getElementById('btnFirst');
+        this.btnPrev = document.getElementById('btnPrev');
+        this.btnNext = document.getElementById('btnNext');
+        this.btnLast = document.getElementById('btnLast');
+        this.pageIndicator = document.getElementById('currentPageIndicator');
+
         this.bindEvents();
         this.setupValidations();
         this.loadDepartments();
@@ -32,7 +41,6 @@ const UserManager = {
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
         this.btnNew.onclick = () => this.openModal();
 
-        // Alternar visibilidad de filtros de fecha
         if (this.btnToggle) {
             this.btnToggle.onclick = () => {
                 const pill = document.getElementById('searchPill');
@@ -41,15 +49,25 @@ const UserManager = {
             };
         }
 
-        // Botón Limpiar filtros
         if (this.btnClear) {
             this.btnClear.onclick = () => this.resetFilters();
         }
 
-        // Búsqueda en tiempo real
         [this.searchInput, this.dateFrom, this.dateTo].forEach(el => {
             if (el) el.addEventListener('input', () => this.applyFilters());
         });
+
+        // Eventos de paginación
+        if (this.btnFirst) this.btnFirst.onclick = () => { this.currentPage = 1; this.renderTableWithPagination(); };
+        if (this.btnPrev) this.btnPrev.onclick = () => { if (this.currentPage > 1) { this.currentPage--; this.renderTableWithPagination(); } };
+        if (this.btnNext) this.btnNext.onclick = () => {
+            const maxPage = Math.ceil(this.filteredUsers.length / this.rowsPerPage);
+            if (this.currentPage < maxPage) { this.currentPage++; this.renderTableWithPagination(); }
+        };
+        if (this.btnLast) this.btnLast.onclick = () => {
+            this.currentPage = Math.ceil(this.filteredUsers.length / this.rowsPerPage) || 1;
+            this.renderTableWithPagination();
+        };
     },
 
     renderSkeleton() {
@@ -65,14 +83,12 @@ const UserManager = {
                 </td>
             </tr>
         `;
-        // Repetimos la fila 5 veces para llenar la tabla
         this.tableBody.innerHTML = skeletonRow.repeat(5);
     },
 
-    // --- CARGAR DEPARTAMENTOS ---
     async loadDepartments() {
         try {
-            const res = await fetch('/api/departments'); // Asegúrate de tener esta ruta en tu API
+            const res = await fetch('/api/departments');
             const data = await res.json();
             this.allDepartments = Array.isArray(data) ? data : [];
             this.renderDeptos();
@@ -83,19 +99,16 @@ const UserManager = {
 
     renderDeptos() {
         if (!this.deptoSelect) return;
-
         const options = this.allDepartments.map(d =>
             `<option value="${d.id}">${d.nombre}</option>`
         ).join('');
-
         this.deptoSelect.innerHTML = `<option value="">Seleccione un departamento...</option>` + options;
     },
 
-    // --- RENDERIZADO DE TABLA ---
+    // Modificado: Ahora acepta los usuarios segmentados para renderizar la vista actual
     renderTable(users) {
         if (Array.isArray(users) && users.length > 0) {
             this.tableBody.innerHTML = users.map(u => {
-                // Buscamos el nombre del departamento para mostrarlo en la tabla
                 const depto = this.allDepartments.find(d => d.id == u.departamento_id);
                 const deptoNombre = depto ? depto.nombre : '<span class="text-muted">Sin asignar</span>';
 
@@ -116,27 +129,51 @@ const UserManager = {
         }
     },
 
+    // Nueva: Maneja la lógica de "rebanar" el arreglo y actualizar botones
+    renderTableWithPagination() {
+        const total = this.filteredUsers.length;
+        const maxPage = Math.ceil(total / this.rowsPerPage) || 1;
+
+        if (this.currentPage > maxPage) this.currentPage = maxPage;
+        if (this.currentPage < 1) this.currentPage = 1;
+
+        const start = (this.currentPage - 1) * this.rowsPerPage;
+        const end = start + this.rowsPerPage;
+        const pagedData = this.filteredUsers.slice(start, end);
+
+        this.renderTable(pagedData);
+
+        // Actualizar UI de paginación
+        if (this.pageIndicator) {
+            this.pageIndicator.innerText = `Página ${this.currentPage} de ${maxPage}`;
+        }
+        
+        // Bloqueo de botones
+        if (this.btnFirst) this.btnFirst.disabled = (this.currentPage === 1);
+        if (this.btnPrev) this.btnPrev.disabled = (this.currentPage === 1);
+        if (this.btnNext) this.btnNext.disabled = (this.currentPage === maxPage || total === 0);
+        if (this.btnLast) this.btnLast.disabled = (this.currentPage === maxPage || total === 0);
+    },
+
     async loadUsers() {
-        this.renderSkeleton(); // <--- Agregado: Mostrar skeletons antes del fetch
+        this.renderSkeleton();
         try {
             const res = await fetch('/api/users');
             const data = await res.json();
-            // El renderTable sustituirá los skeletons automáticamente al terminar
             this.allUsers = Array.isArray(data) ? data : [];
-            this.renderTable(this.allUsers);
+            this.applyFilters(); // Inicializa filteredUsers y llama a render
         } catch (e) {
             this.showToast("Error de conexión al cargar lista", 'error');
-            this.tableBody.innerHTML = '<tr><td colspan="4">Error al cargar datos.</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="5">Error al cargar datos.</td></tr>';
         }
     },
 
-    // --- FILTRADO ---
     applyFilters() {
         const term = this.searchInput.value.toLowerCase().trim();
         const from = this.dateFrom.value;
         const to = this.dateTo.value;
 
-        const filtered = this.allUsers.filter(u => {
+        this.filteredUsers = this.allUsers.filter(u => {
             const fullName = `${u.nombre} ${u.ap} ${u.am || ''}`
                 .toLowerCase()
                 .normalize("NFD")
@@ -152,17 +189,17 @@ const UserManager = {
             return matchesTerm && matchesDate;
         });
 
-        this.renderTable(filtered);
+        this.currentPage = 1; // Reiniciar a página 1 tras filtrar
+        this.renderTableWithPagination();
     },
 
     resetFilters() {
         this.searchInput.value = "";
         this.dateFrom.value = "";
         this.dateTo.value = "";
-        this.renderTable(this.allUsers);
+        this.applyFilters(); // Reutiliza applyFilters para resetear filteredUsers y vista
     },
 
-    // --- VALIDACIONES ---
     setupValidations() {
         const nameInput = document.getElementById('name');
         const apPaterno = document.getElementById('ap_paterno');
@@ -202,12 +239,10 @@ const UserManager = {
         });
     },
 
-    // --- ACCIONES CRUD ---
     async openModal(id = null) {
         this.form.reset();
         this.clearErrors();
 
-        // Importante: Resetear el estado del botón al abrir
         const submitBtn = this.form.querySelector('button[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -237,16 +272,12 @@ const UserManager = {
         this.modal.style.display = 'flex';
     },
 
-    // --- ELIMINAR ---
     async delete(id) {
         this.userToDeleteId = id;
         const deleteModal = document.getElementById('deleteModal');
-
-        // Resetear botón de confirmar por si acaso quedó trabado
         const confirmBtn = document.getElementById('confirmDeleteBtn');
         confirmBtn.disabled = false;
         confirmBtn.innerText = "Sí, eliminar";
-
         deleteModal.style.display = 'flex';
         confirmBtn.onclick = () => this.executeDelete();
     },
@@ -254,7 +285,6 @@ const UserManager = {
     async executeDelete() {
         const id = this.userToDeleteId;
         if (!id) return;
-
         const confirmBtn = document.getElementById('confirmDeleteBtn');
         if (confirmBtn.disabled) return;
 
@@ -275,7 +305,6 @@ const UserManager = {
                 this.closeDeleteModal();
             } else {
                 this.showToast(result.msg, 'error');
-                // Re-habilitar si falló el borrado por lógica de negocio
                 confirmBtn.disabled = false;
                 confirmBtn.innerText = "Confirmar";
             }
@@ -298,14 +327,13 @@ const UserManager = {
         e.preventDefault();
         this.clearErrors();
 
-        // 1. Identificar y bloquear el botón
         const submitBtn = this.form.querySelector('button[type="submit"]');
-        if (!submitBtn || submitBtn.disabled) return; // Si ya está bloqueado, salir
+        if (!submitBtn || submitBtn.disabled) return;
 
         const originalText = submitBtn.innerText;
-        submitBtn.disabled = true; // Bloqueo funcional
+        submitBtn.disabled = true;
         submitBtn.style.opacity = "0.7";
-        submitBtn.innerText = "Guardando..."; // Feedback visual
+        submitBtn.innerText = "Guardando...";
 
         const data = Object.fromEntries(new FormData(this.form));
 
@@ -322,13 +350,9 @@ const UserManager = {
                 this.showToast(result.msg, 'success');
                 this.closeModal();
                 await this.loadUsers();
-                // Nota: Al cerrar el modal y resetear el form, el botón vuelve a su estado natural solo
             } else {
-                // Error de validación (ej. correo duplicado)
                 this.handleBackendErrors(result.errors);
                 this.showToast(result.msg || "Error de validación", 'error');
-
-                // RE-HABILITAMOS para que el usuario corrija y vuelva a intentar
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = "1";
                 submitBtn.innerText = originalText;
@@ -336,15 +360,12 @@ const UserManager = {
         } catch (e) {
             console.error("Detalle técnico:", e);
             this.showToast("Error de conexión. Intente de nuevo.", 'error');
-
-            // RE-HABILITAMOS en caso de error de red
             submitBtn.disabled = false;
             submitBtn.style.opacity = "1";
             submitBtn.innerText = originalText;
         }
     },
 
-    // --- UTILIDADES ---
     handleBackendErrors(errors) {
         if (!errors) return;
         if (errors.email) document.getElementById('error_email').innerText = errors.email;
@@ -359,7 +380,6 @@ const UserManager = {
         this.modal.style.display = 'none';
     },
 
-    // --- SISTEMA DE NOTIFICACIONES TOAST ---
     showToast(msg, type = 'success') {
         let container = document.querySelector('.toast-container');
         if (!container) {
@@ -368,13 +388,9 @@ const UserManager = {
             document.body.appendChild(container);
         }
 
-        // --- LÓGICA ANTISPAM ---
-        // Buscamos si ya existe un toast con el mismo mensaje exacto
         const existingToasts = Array.from(container.querySelectorAll('.toast-message'));
         const isDuplicate = existingToasts.some(t => t.innerText === msg);
-
-        if (isDuplicate) return; // Si ya existe uno igual, no hacemos nada
-        // -----------------------
+        if (isDuplicate) return;
 
         const config = {
             success: { icon: 'fa-check-circle', title: 'Éxito' },
@@ -388,19 +404,16 @@ const UserManager = {
 
         const toast = document.createElement('div');
         toast.className = `toast ${typeKey}`;
-
         toast.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <div class="toast-content">
-            <span class="toast-title">${title}</span>
-            <span class="toast-message">${msg}</span>
-        </div>
-        <i class="fas fa-times" style="cursor:pointer; font-size: 12px; opacity: 0.7;" onclick="this.parentElement.remove()"></i>
-    `;
+            <i class="fas ${icon}"></i>
+            <div class="toast-content">
+                <span class="toast-title">${title}</span>
+                <span class="toast-message">${msg}</span>
+            </div>
+            <i class="fas fa-times" style="cursor:pointer; font-size: 12px; opacity: 0.7;" onclick="this.parentElement.remove()"></i>
+        `;
 
         container.appendChild(toast);
-
-        // Auto-eliminar con salida suave
         setTimeout(() => {
             if (toast.parentElement) {
                 toast.style.opacity = '0';
